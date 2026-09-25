@@ -712,11 +712,38 @@ const SCM_LOCKUP = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQ8AAABUCAYAAA
 const CFG_KEY = 'huddle_scm_cloud_cfg_v1';
 const CFG_DEFAULT = { method:'', webAppUrl:'', secret:'', sheetUrl:'', formsPrefillUrl:'', formsActionUrl:'', formsEntryMap:null };
 
+// Configuração de fábrica: já vem pronta em qualquer aparelho, sem precisar
+// que cada pessoa configure nada. Gravada por Antonio (administrador) a
+// partir do Google Forms já publicado. Pode ser sobrescrita localmente via
+// "⚙ Configurar planilha", se um dia for preciso trocar o destino.
+const BUILTIN_CLOUD_CONFIG = {
+  method: 'forms',
+  formsPrefillUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfrRoyS-pvjgRJURKzREvfEReCQ66zzXHAblNhIUQnV2J7TlA/viewform?usp=pp_url&entry.1746117981=MARCA_NOME_7Q9K&entry.359833926=MARCA_CRM_7Q9K&entry.1783403272=MARCA_DATA_7Q9K&entry.2136324791=MARCA_HORA_7Q9K&entry.1798601697=MARCA_TURNO_7Q9K&entry.188202572=MARCA_CM1_7Q9K&entry.116741621=MARCA_CM2_7Q9K&entry.853844997=MARCA_CG_7Q9K&entry.1116310508=MARCA_SJQ_7Q9K&entry.913320893=MARCA_SJS_7Q9K&entry.1050778063=MARCA_ONCO_7Q9K&entry.1583582891=MARCA_TOTAIS_7Q9K',
+  formsActionUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSfrRoyS-pvjgRJURKzREvfEReCQ66zzXHAblNhIUQnV2J7TlA/formResponse',
+  formsEntryMap: {
+    meta_nome: 'entry.1746117981',
+    meta_crm: 'entry.359833926',
+    meta_data: 'entry.1783403272',
+    meta_hora: 'entry.2136324791',
+    meta_turno: 'entry.1798601697',
+    cm1: 'entry.188202572',
+    cm2: 'entry.116741621',
+    cg: 'entry.853844997',
+    orto_sjq: 'entry.1116310508',
+    orto_sjs: 'entry.913320893',
+    onco: 'entry.1050778063',
+    totais: 'entry.1583582891',
+  },
+  sheetUrl: 'https://docs.google.com/spreadsheets/d/19zLLX-Szv_-jccSuzOf8AU7ji1FsCTppFdoyArL612M/edit?usp=drivesdk',
+  webAppUrl: '', secret: '',
+};
+
 function loadCloudConfig(){
   try{
     const raw = localStorage.getItem(CFG_KEY);
-    return raw ? Object.assign({}, CFG_DEFAULT, JSON.parse(raw)) : Object.assign({}, CFG_DEFAULT);
-  }catch(e){ return Object.assign({}, CFG_DEFAULT); }
+    if(raw) return Object.assign({}, CFG_DEFAULT, JSON.parse(raw));
+  }catch(e){ /* localStorage indisponível — segue para o padrão de fábrica */ }
+  return Object.assign({}, CFG_DEFAULT, BUILTIN_CLOUD_CONFIG);
 }
 function saveCloudConfig(cfg){
   try{ localStorage.setItem(CFG_KEY, JSON.stringify(cfg)); }catch(e){ /* silencioso */ }
