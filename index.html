@@ -24,6 +24,10 @@
   --amber-soft:#FCF3DF;
   --green:#2E9E6B;
   --green-soft:#E8F7EF;
+  --purple:#7C5CBF;
+  --purple-soft:#EFEAFA;
+  --teal:#0E8074;
+  --teal-soft:#E4F4F2;
   --ink:#161C2B;
   --sub:#5B6474;
   --paper:#F3F5F9;
@@ -137,7 +141,7 @@ main{flex:1; max-width:1180px; margin:0 auto; width:100%; padding:20px 16px 120p
 .panel-head p{margin:3px 0 0; font-size:12.5px; color:var(--sub);}
 
 .field-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
-@media(min-width:560px){ .field-grid.f4{grid-template-columns:repeat(4,1fr);} }
+@media(min-width:560px){ .field-grid.f4{grid-template-columns:repeat(4,1fr);} .field-grid.f5{grid-template-columns:repeat(5,1fr);} }
 .field{display:flex; flex-direction:column; gap:5px;}
 .field label{font-size:11px; font-weight:700; color:var(--sub); text-transform:uppercase; letter-spacing:.03em;}
 .field input, .field select{
@@ -170,6 +174,8 @@ main{flex:1; max-width:1180px; margin:0 auto; width:100%; padding:20px 16px 120p
   border:1px solid transparent;
 }
 .tag-chip.risco{background:var(--red-soft); color:var(--red-dk);}
+.tag-chip.paliativo{background:var(--purple-soft); color:var(--purple);}
+.tag-chip.hemodialise{background:var(--teal-soft); color:var(--teal);}
 .tag-chip.pendencia{background:var(--amber-soft); color:#7A5A0F;}
 .tag-chip.transfer{background:var(--navy-soft); color:var(--navy);}
 .tag-chip button{
@@ -225,10 +231,10 @@ main{flex:1; max-width:1180px; margin:0 auto; width:100%; padding:20px 16px 120p
 .pv-row{display:flex; gap:12px;}
 
 .pv-kpis{display:flex; gap:10px; flex:1;}
-.pv-kpi{flex:1; border-radius:8px; padding:10px 12px; border:1px solid var(--line); position:relative; overflow:hidden;}
+.pv-kpi{flex:1; border-radius:8px; padding:9px 9px; border:1px solid var(--line); position:relative; overflow:hidden; min-width:0;}
 .pv-kpi .bar{position:absolute; left:0; top:0; bottom:0; width:4px;}
-.pv-kpi .kl{font-size:8.5px; font-weight:700; letter-spacing:.05em; color:var(--sub); text-transform:uppercase;}
-.pv-kpi .kv{font-family:var(--font-data); font-weight:700; font-size:22px; margin-top:5px;}
+.pv-kpi .kl{font-size:7.6px; font-weight:700; letter-spacing:.03em; color:var(--sub); text-transform:uppercase; line-height:1.25;}
+.pv-kpi .kv{font-family:var(--font-data); font-weight:700; font-size:19px; margin-top:4px;}
 
 .pv-gauge{width:150px; flex-shrink:0; border:1px solid var(--line); border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px 0 4px;}
 .pv-gauge .gl{font-size:8.5px; font-weight:700; color:var(--sub); text-transform:uppercase; letter-spacing:.04em;}
@@ -245,7 +251,7 @@ main{flex:1; max-width:1180px; margin:0 auto; width:100%; padding:20px 16px 120p
 .pv-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px;}
 .pv-unit{border:1px solid var(--line); border-radius:8px; overflow:hidden; min-height:170px; display:flex; flex-direction:column;}
 .pv-unit-head{padding:6px 10px; color:#fff; font-weight:800; font-size:11px;}
-.pv-unit-body{padding:8px 10px; flex:1; display:flex; flex-direction:column;}
+.pv-unit-body{padding:8px 10px; flex:1; display:flex; flex-direction:column; overflow:hidden;}
 .pv-unit-stats{display:flex; gap:6px;}
 .pv-unit-stat{flex:1;}
 .pv-unit-stat .sl{font-size:6.3px; font-weight:700; color:var(--sub); letter-spacing:.04em; text-transform:uppercase;}
@@ -766,10 +772,13 @@ function unitSummaryText(key){
   const u = state.units[key];
   const parts = [
     'Pacientes: ' + (u.pacientes || '0'),
-    'Vagos: ' + (u.vagos || '0'),
+    'Vagos M: ' + (u.vagosM || '0'),
+    'Vagos F: ' + (u.vagosF || '0'),
     'Admissões: ' + (u.admissoes || '0'),
     'Altas: ' + (u.altas || '0'),
     'Risco: ' + (u.risco.length ? u.risco.join(', ') : '—'),
+    'Paliativos: ' + (u.paliativos.length ? u.paliativos.join(', ') : '—'),
+    'Hemodiálise: ' + (u.hemodialise.length ? u.hemodialise.join(', ') : '—'),
     'Pendências: ' + (u.pendencias.length ? u.pendencias.join(' | ') : '—'),
     'Transferências: ' + (u.transferencias.length ? u.transferencias.join(' | ') : '—'),
   ];
@@ -778,7 +787,7 @@ function unitSummaryText(key){
 
 function totaisSummaryText(){
   const t = totals();
-  return `Pacientes: ${t.pacientes} • Vagos: ${t.vagos} • Admissões: ${t.admissoes} • Altas: ${t.altas} • Risco: ${t.risco} • Pendências: ${t.pendencias} • Ocupação: ${t.ocupacao}%`;
+  return `Pacientes: ${t.pacientes} • Vagos M: ${t.vagosM} • Vagos F: ${t.vagosF} • Admissões: ${t.admissoes} • Altas: ${t.altas} • Risco: ${t.risco} • Paliativos: ${t.paliativos} • Hemodiálise: ${t.hemodialise} • Pendências: ${t.pendencias} • Ocupação: ${t.ocupacao}%`;
 }
 
 function buildSheetPayload(){
@@ -880,7 +889,7 @@ const UNIT_DEFS = [
   {key:'onco', name:'Oncologia (CACON)', color:'#B3122A'},
 ];
 
-function blankUnit(){ return {pacientes:'', vagos:'', admissoes:'', altas:'', risco:[], pendencias:[], transferencias:[]}; }
+function blankUnit(){ return {pacientes:'', vagosM:'', vagosF:'', admissoes:'', altas:'', risco:[], paliativos:[], hemodialise:[], pendencias:[], transferencias:[]}; }
 
 const state = {
   meta:{ nome:'', crm:'', cargo:'Médico Hospitalista', data:todayISO(), hora:nowHHMM(), turno:'Manhã' },
@@ -909,14 +918,18 @@ function el(html){ const t=document.createElement('template'); t.innerHTML=html.
 
 function fieldGridHTML(key, u){
   return `
-  <div class="field-grid f4">
+  <div class="field-grid f5">
     <div class="field">
       <label>Pacientes</label>
       <input data-unit="${key}" data-f="pacientes" value="${u.pacientes}" placeholder="Ex.: 28" inputmode="text" />
     </div>
     <div class="field">
-      <label>Vagos</label>
-      <input data-unit="${key}" data-f="vagos" value="${u.vagos}" placeholder="Ex.: 1F" inputmode="text" />
+      <label>Vagos ♂ (Masc.)</label>
+      <input data-unit="${key}" data-f="vagosM" value="${u.vagosM}" placeholder="Ex.: 2" inputmode="text" />
+    </div>
+    <div class="field">
+      <label>Vagos ♀ (Fem.)</label>
+      <input data-unit="${key}" data-f="vagosF" value="${u.vagosF}" placeholder="Ex.: 1" inputmode="text" />
     </div>
     <div class="field">
       <label>Admissões</label>
@@ -956,6 +969,8 @@ function unitBlockHTML(def){
     <div class="unit-block-body">
       ${fieldGridHTML(def.key, u)}
       ${taglistHTML(def.key,'risco','Pacientes de risco','var(--red)','Ex.: 6.1 — instável hemodinâmico','risco')}
+      ${taglistHTML(def.key,'paliativos','Cuidados paliativos','var(--purple)','Ex.: 9.3','paliativo')}
+      ${taglistHTML(def.key,'hemodialise','Hemodiálise','var(--teal)','Ex.: 4.2','hemodialise')}
       ${taglistHTML(def.key,'pendencias','Pendências','var(--amber)','Ex.: US Doppler Venoso (1.2)','pendencia')}
       ${taglistHTML(def.key,'transferencias','Transferências','var(--navy)','Ex.: 6.2 → HO','transfer')}
     </div>
@@ -1020,15 +1035,18 @@ function stepIsFilled(stepId){
 
 function totals(){
   const num = v => { const m = String(v||'').match(/\d+/); return m? parseInt(m[0],10):0; };
-  let pacientes=0, vagos=0, admissoes=0, altas=0, risco=0, pendencias=0;
+  let pacientes=0, vagos=0, vagosM=0, vagosF=0, admissoes=0, altas=0, risco=0, pendencias=0, paliativos=0, hemodialise=0;
   UNIT_DEFS.forEach(d=>{
     const u = state.units[d.key];
-    pacientes += num(u.pacientes); vagos += num(u.vagos);
+    pacientes += num(u.pacientes);
+    vagosM += num(u.vagosM); vagosF += num(u.vagosF);
     admissoes += num(u.admissoes); altas += num(u.altas);
     risco += u.risco.length; pendencias += u.pendencias.length;
+    paliativos += u.paliativos.length; hemodialise += u.hemodialise.length;
   });
+  vagos = vagosM + vagosF;
   const ocupacao = (pacientes+vagos)>0 ? Math.round((pacientes/(pacientes+vagos))*100) : 0;
-  return {pacientes,vagos,admissoes,altas,risco,pendencias,ocupacao};
+  return {pacientes,vagos,vagosM,vagosF,admissoes,altas,risco,pendencias,paliativos,hemodialise,ocupacao};
 }
 
 function ribbonHTML(){
@@ -1039,6 +1057,8 @@ function ribbonHTML(){
     ['Admissões', t.admissoes],
     ['Altas', t.altas],
     ['Risco', t.risco],
+    ['Paliativos', t.paliativos],
+    ['Hemodiálise', t.hemodialise],
     ['Pendências', t.pendencias],
   ];
   return items.map(([l,v])=>`<div class="ribbon-item"><div class="rv">${v}</div><div class="rl">${l}</div></div>`).join('');
@@ -1294,12 +1314,14 @@ function buildPdfRootHTML(){
     ['Admissões hoje', t.admissoes, 'var(--green)'],
     ['Altas hoje', t.altas, 'var(--green)'],
     ['Pacientes de risco', t.risco, 'var(--red)'],
+    ['Paliativos', t.paliativos, 'var(--purple)'],
+    ['Hemodiálise', t.hemodialise, 'var(--teal)'],
     ['Pendências abertas', t.pendencias, 'var(--amber)'],
   ];
 
   const bars = UNIT_DEFS.map(d=>{
     const u = state.units[d.key];
-    const p = num(u.pacientes), v = num(u.vagos);
+    const p = num(u.pacientes), v = num(u.vagosM) + num(u.vagosF);
     const ph = Math.max((p/maxVal)*96, p>0?4:0);
     const vh = Math.max((v/maxVal)*96, v>0?4:0);
     return `
@@ -1312,9 +1334,16 @@ function buildPdfRootHTML(){
 
   const unitCards = UNIT_DEFS.map(d=>{
     const u = state.units[d.key];
+    const vagosTxt = `${u.vagosM||0}♂ · ${u.vagosF||0}♀`;
     const riscoHTML = u.risco.length
       ? `<div class="pv-unit-flag"><span class="d" style="background:var(--red)"></span><b>RISCO:</b><span class="txt">${u.risco.join(', ')}</span></div>`
       : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem pacientes de risco</span></div>`;
+    const paliativoHTML = u.paliativos.length
+      ? `<div class="pv-unit-flag"><span class="d" style="background:var(--purple)"></span><b>PALIATIVO:</b><span class="txt">${u.paliativos.join(', ')}</span></div>`
+      : ``;
+    const hemodialiseHTML = u.hemodialise.length
+      ? `<div class="pv-unit-flag"><span class="d" style="background:var(--teal)"></span><b>HEMODIÁLISE:</b><span class="txt">${u.hemodialise.join(', ')}</span></div>`
+      : ``;
     const pendHTML = u.pendencias.length
       ? `<div class="pv-unit-flag" style="align-items:flex-start;"><span class="d" style="background:var(--amber);margin-top:1px;"></span><span class="txt">${u.pendencias.join(' • ')}</span></div>`
       : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem pendências</span></div>`;
@@ -1327,12 +1356,14 @@ function buildPdfRootHTML(){
       <div class="pv-unit-body">
         <div class="pv-unit-stats">
           <div class="pv-unit-stat"><div class="sl">Pacientes</div><div class="sv" style="color:${d.color}">${u.pacientes||'0'}</div></div>
-          <div class="pv-unit-stat"><div class="sl">Vagos</div><div class="sv">${u.vagos||'0'}</div></div>
+          <div class="pv-unit-stat"><div class="sl">Vagos</div><div class="sv" style="font-size:12px;">${vagosTxt}</div></div>
           <div class="pv-unit-stat"><div class="sl">Admissões</div><div class="sv" style="color:var(--green)">${u.admissoes||'0'}</div></div>
           <div class="pv-unit-stat"><div class="sl">Altas</div><div class="sv" style="color:var(--green)">${u.altas||'0'}</div></div>
         </div>
         <div class="pv-hr"></div>
         ${riscoHTML}
+        ${paliativoHTML}
+        ${hemodialiseHTML}
         ${pendHTML}
         ${transfHTML}
       </div>
