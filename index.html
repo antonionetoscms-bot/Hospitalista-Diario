@@ -910,7 +910,7 @@ function nowHHMM(){const d=new Date(); return pad(d.getHours())+':'+pad(d.getMin
 const UNIT_DEFS = [
   {key:'cm1', name:'Clínica Médica 1', color:'#2E5EAA'},
   {key:'cm2', name:'Clínica Médica 2', color:'#5B7FD4'},
-  {key:'cg',  name:'Clínica Geral',    color:'#2E9E6B'},
+  {key:'cg',  name:'Cirurgia Geral',   color:'#2E9E6B'},
   {key:'orto_sjq', name:'Ortopedia — São Joaquim', color:'#E0A62B'},
   {key:'orto_sjs', name:'Ortopedia — São José',    color:'#C97A1B'},
   {key:'onco', name:'Oncologia (CACON)', color:'#B3122A'},
@@ -1357,7 +1357,7 @@ function buildPdfRootHTML(){
       <div class="pv-bar" style="height:${vh}px;background:#EEF0F4;border:1px solid var(--sub)"><span class="bv" style="color:var(--sub)">${v||''}</span></div>
     </div>`;
   }).join('');
-  const barLabels = UNIT_DEFS.map(d=>`<span>${d.name.replace('Ortopedia — ','').replace('Clínica Médica','CM').replace('Clínica Geral','CG').replace(' (CACON)','')}</span>`).join('');
+  const barLabels = UNIT_DEFS.map(d=>`<span>${d.name.replace('Ortopedia — ','').replace('Clínica Médica','CM').replace('Cirurgia Geral','CG').replace(' (CACON)','')}</span>`).join('');
 
   const unitCards = UNIT_DEFS.map(d=>{
     const u = state.units[d.key];
