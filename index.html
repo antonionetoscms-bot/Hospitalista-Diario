@@ -1353,10 +1353,10 @@ function buildPdfRootHTML(){
       : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem pacientes de risco</span></div>`;
     const paliativoHTML = u.paliativos.length
       ? `<div class="pv-unit-flag"><span class="d" style="background:var(--purple)"></span><b>PALIATIVO:</b><span class="txt">${u.paliativos.join(', ')}</span></div>`
-      : ``;
+      : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem cuidados paliativos</span></div>`;
     const hemodialiseHTML = u.hemodialise.length
       ? `<div class="pv-unit-flag"><span class="d" style="background:var(--teal)"></span><b>HEMODIÁLISE:</b><span class="txt">${u.hemodialise.join(', ')}</span></div>`
-      : ``;
+      : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem hemodiálise</span></div>`;
     const pendHTML = u.pendencias.length
       ? `<div class="pv-unit-flag" style="align-items:flex-start;"><span class="d" style="background:var(--amber);margin-top:1px;"></span><span class="txt">${u.pendencias.join(' • ')}</span></div>`
       : `<div class="pv-unit-flag"><span class="d" style="background:var(--green)"></span><span class="txt" style="color:var(--green);font-weight:700;">Sem pendências</span></div>`;
