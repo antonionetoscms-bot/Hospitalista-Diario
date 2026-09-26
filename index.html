@@ -955,12 +955,14 @@ function fieldGridHTML(key, u){
   </div>`;
 }
 
-function taglistHTML(key, listName, title, swatchColor, placeholder, chipClass){
-  const u = state.units[key];
-  const items = u[listName];
-  const chips = items.length
+function chipsInnerHTML(key, listName, chipClass){
+  const items = state.units[key][listName];
+  return items.length
     ? items.map((txt,i)=>`<span class="tag-chip ${chipClass}">${escapeHTML(txt)}<button type="button" data-remove="${key}|${listName}|${i}">✕</button></span>`).join('')
     : `<span class="tag-empty">Nenhum item adicionado</span>`;
+}
+
+function taglistHTML(key, listName, title, swatchColor, placeholder, chipClass){
   return `
   <div class="taglist-section">
     <div class="taglist-title"><span class="sw" style="background:${swatchColor}"></span>${title}</div>
@@ -968,7 +970,7 @@ function taglistHTML(key, listName, title, swatchColor, placeholder, chipClass){
       <input type="text" data-tagfield="${key}|${listName}" placeholder="${placeholder}" />
       <button type="button" class="tag-add-btn" data-tagadd="${key}|${listName}">Adicionar</button>
     </div>
-    <div class="tags-wrap">${chips}</div>
+    <div class="tags-wrap" id="tagswrap-${key}-${listName}" data-chipclass="${chipClass}">${chipsInnerHTML(key,listName,chipClass)}</div>
   </div>`;
 }
 
@@ -1169,7 +1171,9 @@ function attachGlobalEvents(){
       commitTag(unit,list,input);
     });
   });
-  // tag add via Enter
+  // tag add via Enter OU ao sair do campo (blur) — cobre o caso do teclado do
+  // celular cujo botão "Ir/Concluído" não dispara Enter, e o caso de tocar
+  // direto em "Continuar" sem tocar em "Adicionar" antes.
   document.querySelectorAll('input[data-tagfield]').forEach(inp=>{
     inp.addEventListener('keydown', e=>{
       if(e.key==='Enter'){
@@ -1178,26 +1182,45 @@ function attachGlobalEvents(){
         commitTag(unit,list,inp);
       }
     });
-  });
-  // tag remove
-  document.querySelectorAll('[data-remove]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const [unit,list,idx] = btn.dataset.remove.split('|');
-      state.units[unit][list].splice(parseInt(idx,10),1);
-      render();
+    inp.addEventListener('blur', ()=>{
+      const [unit,list] = inp.dataset.tagfield.split('|');
+      commitTag(unit,list,inp);
     });
   });
+  // tag remove
+  bindRemoveButtons(document);
 
   if(document.getElementById('mainArea') && STEPS[currentStep].id==='review'){
     attachReviewEvents();
   }
 }
 
+function bindRemoveButtons(container){
+  container.querySelectorAll('[data-remove]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const [unit,list,idx] = btn.dataset.remove.split('|');
+      state.units[unit][list].splice(parseInt(idx,10),1);
+      refreshTagsWrap(unit,list);
+      updateRibbonDOM();
+    });
+  });
+}
+
+function refreshTagsWrap(unit,list){
+  const wrap = document.getElementById(`tagswrap-${unit}-${list}`);
+  if(!wrap) return; // não está na tela atual (ex.: usuário já navegou pra outra etapa)
+  const chipClass = wrap.dataset.chipclass;
+  wrap.innerHTML = chipsInnerHTML(unit,list,chipClass);
+  bindRemoveButtons(wrap);
+}
+
 function commitTag(unit,list,input){
   const v = input.value.trim();
   if(!v) return;
   state.units[unit][list].push(v);
-  render();
+  input.value = '';
+  refreshTagsWrap(unit,list);
+  updateRibbonDOM();
 }
 
 function updateRibbonDOM(){
