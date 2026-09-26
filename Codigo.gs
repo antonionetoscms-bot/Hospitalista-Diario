@@ -117,3 +117,36 @@ function ensureHeaders(sheet) {
 function jsonOut(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
+
+function debugPost() {
+  var fakeEvent = {
+    postData: {
+      contents: JSON.stringify({
+        secret: '',
+        data: '2026-09-26',
+        hora: '23:10',
+        turno: 'Noite',
+        nome: 'TESTE DEBUG',
+        crm: '0000',
+        cargo: 'Médico Hospitalista',
+        units: {
+          cm1: { pacientes: '1', vagosM: '0', vagosF: '0', admissoes: '0', altas: '0', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
+          cm2: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
+          cg: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
+          orto_sjq: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
+          orto_sjs: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
+          onco: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] }
+        },
+        totais: { pacientes: 1, vagosM: 0, vagosF: 0, vagos: 0, admissoes: 0, altas: 0, risco: 0, paliativos: 0, hemodialise: 0, pendencias: 0, ocupacao: 100 }
+      })
+    }
+  };
+
+  try {
+    var result = doPost(fakeEvent);
+    Logger.log('SUCESSO: ' + result.getContent());
+  } catch (err) {
+    Logger.log('ERRO CAPTURADO: ' + err.message);
+    Logger.log('STACK: ' + err.stack);
+  }
+}
