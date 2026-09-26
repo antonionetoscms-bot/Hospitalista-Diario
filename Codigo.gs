@@ -1,53 +1,25 @@
-/**
- * BACKEND DO HUDDLE — Painel de Leitos (Santa Casa de Misericórdia de Sobral)
- * ---------------------------------------------------------------------------
- * O que este script faz:
- *  - Recebe os dados enviados pelo app (uma requisição por envio)
- *  - Grava UMA linha nova por envio na aba "Histórico" (nunca sobrescreve)
- *  - Cria os cabeçalhos automaticamente na primeira vez
- *
- * COMO INSTALAR (uma única vez, funciona pelo celular):
- *  1. Crie uma planilha nova no Google Sheets (ex.: "Huddle - Histórico Diário")
- *  2. Copie o ID dela: é o trecho da URL entre "/d/" e "/edit"
- *     Ex.: https://docs.google.com/spreadsheets/d/AQUI_ESTA_O_ID/edit
- *  3. Cole esse ID na constante SHEET_ID logo abaixo, entre aspas
- *  4. Abra script.google.com (pelo navegador do celular, sem precisar
- *     de "modo desktop") → "Novo projeto"
- *  5. Apague o conteúdo padrão e cole este arquivo inteiro (já com o
- *     SHEET_ID preenchido)
- *  6. Toque no ícone de disquete para salvar
- *  7. "Implantar" > "Nova implantação"
- *     - Tipo: "App da Web"
- *     - Executar como: "Eu" (sua conta)
- *     - Quem tem acesso: "Qualquer pessoa"
- *  8. Autorize as permissões quando solicitado
- *  9. Copie a URL do app da Web (termina em /exec) e me envie
- * 10. (Opcional) Defina uma senha na constante SECRET abaixo — use a
- *     MESMA senha no campo "Senha de proteção" do app
- */
-
-var SHEET_ID = "COLE_AQUI_O_ID_DA_PLANILHA"; // obrigatório — veja o Passo 2/3 acima
-var SECRET = ""; // opcional — ex.: "sobral2026". Deixe "" para não exigir senha.
+var SHEET_ID = "11zY5ug39GTip2bdpFI7oPJwbn32QdUb7CX_ci51GEck";
+var SECRET = "";
 
 var UNITS = ['cm1','cm2','cg','orto_sjq','orto_sjs','onco'];
 var UNIT_LABELS = {
   cm1: 'CM1',
   cm2: 'CM2',
   cg: 'CG',
-  orto_sjq: 'Orto São Joaquim',
-  orto_sjs: 'Orto São José',
+  orto_sjq: 'Orto Sao Joaquim',
+  orto_sjs: 'Orto Sao Jose',
   onco: 'Oncologia'
 };
 
 function doPost(e) {
   var ss = SpreadsheetApp.openById(SHEET_ID);
-  var sheet = ss.getSheetByName('Histórico') || ss.insertSheet('Histórico');
+  var sheet = ss.getSheetByName('Historico') || ss.insertSheet('Historico');
 
   var data;
   try {
     data = JSON.parse(e.postData.contents);
   } catch (err) {
-    return jsonOut({ ok: false, error: 'payload inválido' });
+    return jsonOut({ ok: false, error: 'payload invalido' });
   }
 
   if (SECRET && data.secret !== SECRET) {
@@ -92,22 +64,22 @@ function doGet(e) {
 
 function ensureHeaders(sheet) {
   if (sheet.getLastRow() > 0) return;
-  var headers = ['Carimbo de envio', 'Data', 'Hora', 'Turno', 'Preenchido por', 'CRM-CE', 'Função'];
+  var headers = ['Carimbo de envio', 'Data', 'Hora', 'Turno', 'Preenchido por', 'CRM-CE', 'Funcao'];
   UNITS.forEach(function (k) {
     var L = UNIT_LABELS[k];
     headers.push(
-      L + ' Pacientes', L + ' Vagos Masc', L + ' Vagos Fem', L + ' Admissões', L + ' Altas',
-      L + ' Risco (nº)', L + ' Risco (lista)',
-      L + ' Paliativos (nº)', L + ' Paliativos (leitos)',
-      L + ' Hemodiálise (nº)', L + ' Hemodiálise (leitos)',
-      L + ' Pendências (nº)', L + ' Pendências (lista)',
-      L + ' Transferências'
+      L + ' Pacientes', L + ' Vagos Masc', L + ' Vagos Fem', L + ' Admissoes', L + ' Altas',
+      L + ' Risco (n)', L + ' Risco (lista)',
+      L + ' Paliativos (n)', L + ' Paliativos (leitos)',
+      L + ' Hemodialise (n)', L + ' Hemodialise (leitos)',
+      L + ' Pendencias (n)', L + ' Pendencias (lista)',
+      L + ' Transferencias'
     );
   });
   headers.push(
     'Total Pacientes', 'Total Vagos Masc', 'Total Vagos Fem', 'Total Vagos',
-    'Total Admissões', 'Total Altas', 'Total Risco', 'Total Paliativos', 'Total Hemodiálise',
-    'Total Pendências', 'Ocupação (%)'
+    'Total Admissoes', 'Total Altas', 'Total Risco', 'Total Paliativos', 'Total Hemodialise',
+    'Total Pendencias', 'Ocupacao (%)'
   );
   sheet.appendRow(headers);
   sheet.setFrozenRows(1);
@@ -128,7 +100,7 @@ function debugPost() {
         turno: 'Noite',
         nome: 'TESTE DEBUG',
         crm: '0000',
-        cargo: 'Médico Hospitalista',
+        cargo: 'Medico Hospitalista',
         units: {
           cm1: { pacientes: '1', vagosM: '0', vagosF: '0', admissoes: '0', altas: '0', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
           cm2: { pacientes: '', vagosM: '', vagosF: '', admissoes: '', altas: '', risco: [], paliativos: [], hemodialise: [], pendencias: [], transferencias: [] },
